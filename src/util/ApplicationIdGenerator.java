@@ -1,26 +1,27 @@
 package util;
 
+import java.security.SecureRandom;
+
 /**
- * Utility class to generate formatted application numbers (e.g. 0001AA).
+ * Generates application reference numbers in the established format:
+ * four digits followed by two upper-case letters (e.g. 4821KD).
+ *
+ * The previous implementation used an in-memory counter that restarted at
+ * 0001AA on every launch, colliding with existing records. IDs are now random
+ * (6.76 million combinations) and callers verify uniqueness against the
+ * database before inserting (see Model.DBSearch#submitNewApplication).
  */
-public class ApplicationIdGenerator {
+public final class ApplicationIdGenerator {
 
-    private static int counter = 0;
+    private static final SecureRandom RANDOM = new SecureRandom();
 
-    /**
-     * Generates a sequential formatted string with numeric prefix and letter suffix.
-     * Example: 0001AA, 0002AB, etc.
-     */
-    public static synchronized String generateFormattedString() {
-        counter++;
-        String formattedNumber = String.format("%04d", counter);
-        char letter1 = (char) ('A' + ((counter - 1) / 26) % 26);
-        char letter2 = (char) ('A' + (counter - 1) % 26);
-        return formattedNumber + letter1 + letter2;
+    private ApplicationIdGenerator() {
     }
 
-    public static synchronized void resetCounter() {
-        counter = 0;
+    public static String generateFormattedString() {
+        int number = RANDOM.nextInt(10_000);
+        char letter1 = (char) ('A' + RANDOM.nextInt(26));
+        char letter2 = (char) ('A' + RANDOM.nextInt(26));
+        return String.format("%04d%c%c", number, letter1, letter2);
     }
 }
-
