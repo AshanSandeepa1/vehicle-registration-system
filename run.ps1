@@ -15,9 +15,14 @@ $javaExe = if ($javaCmd) { $javaCmd.Source } else { $null }
 $javacExe = if ($javacCmd) { $javacCmd.Source } else { $null }
 
 if (-not $javaExe) {
+    $oracleJdk = "C:\Users\shamil\develop\oracleJdk-27\bin\java.exe"
+    $oracleJavac = "C:\Users\shamil\develop\oracleJdk-27\bin\javac.exe"
     $vscodeJava = "C:\Users\shamil\.vscode\extensions\redhat.java-1.56.0-win32-x64\jre\21.0.12.1-win32-x86_64\bin\java.exe"
     $vscodeJavac = "C:\Users\shamil\.vscode\extensions\redhat.java-1.56.0-win32-x64\jre\21.0.12.1-win32-x86_64\bin\javac.exe"
-    if (Test-Path $vscodeJava) {
+    if (Test-Path $oracleJdk) {
+        $javaExe = $oracleJdk
+        $javacExe = $oracleJavac
+    } elseif (Test-Path $vscodeJava) {
         $javaExe = $vscodeJava
         $javacExe = $vscodeJavac
     } elseif ($env:JAVA_HOME) {

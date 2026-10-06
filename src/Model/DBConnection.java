@@ -134,15 +134,9 @@ public class DBConnection {
             // Seed login data if empty
             try (var rs = s.executeQuery("SELECT COUNT(*) FROM login")) {
                 if (rs.next() && rs.getInt(1) == 0) {
-                    s.execute("INSERT INTO login (indexID, username, email, password) VALUES (1, '0', '0', '123')");
-                    s.execute("INSERT INTO login (indexID, username, email, password) VALUES (4, 'Ashan', 'ashan@vrs.com', '123')");
-                    s.execute("INSERT INTO login (indexID, username, email, password) VALUES (5, 'John', 'john@vrs.com', '123')");
-                    s.execute("INSERT INTO login (indexID, username, email, password) VALUES (9, 'as', 'qw@gmail.com', '123')");
-                    s.execute("INSERT INTO login (indexID, username, email, password) VALUES (10, 'asdasd', 'asd@gmail.com', '123')");
-                    s.execute("INSERT INTO login (indexID, username, email, password) VALUES (11, 'adsd', 'ash@ffgd.com', '123')");
-                    s.execute("INSERT INTO login (indexID, username, email, password) VALUES (12, 'dfdfdf', 'ashan@hhhh.com', '123')");
-                    s.execute("INSERT INTO login (indexID, username, email, password) VALUES (13, 'Lakma', 'lakma@gmail.com', 'Lakma@123')");
-                    s.execute("INSERT INTO login (indexID, username, email, password) VALUES (14, 'shamil suraweera', 'shamilsuraweera@vrs.com', '123')");
+                    s.execute("INSERT INTO login (indexID, username, email, password) VALUES (1, 'Shamil Suraweera', 'shamil@vrs.com', '123')");
+                    s.execute("INSERT INTO login (indexID, username, email, password) VALUES (2, 'Ashan Suraweera', 'ashan@vrs.com', '123')");
+                    s.execute("INSERT INTO login (indexID, username, email, password) VALUES (3, 'John Doe', 'john@vrs.com', '123')");
                 }
             }
 

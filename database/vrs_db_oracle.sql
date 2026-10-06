@@ -72,15 +72,9 @@ CREATE TABLE vehicle_details (
 -- ============================================================================
 
 -- Insert Login Users
-INSERT INTO login (indexID, username, email, password) VALUES (1, '0', '0', '123');
-INSERT INTO login (indexID, username, email, password) VALUES (4, 'Ashan', 'ashan@vrs.com', '123');
-INSERT INTO login (indexID, username, email, password) VALUES (5, 'John', 'john@vrs.com', '123');
-INSERT INTO login (indexID, username, email, password) VALUES (9, 'as', 'qw@gmail.com', '123');
-INSERT INTO login (indexID, username, email, password) VALUES (10, 'asdasd', 'asd@gmail.com', '123');
-INSERT INTO login (indexID, username, email, password) VALUES (11, 'adsd', 'ash@ffgd.com', '123');
-INSERT INTO login (indexID, username, email, password) VALUES (12, 'dfdfdf', 'ashan@hhhh.com', '123');
-INSERT INTO login (indexID, username, email, password) VALUES (13, 'Lakma', 'lakma@gmail.com', 'Lakma@123');
-INSERT INTO login (indexID, username, email, password) VALUES (14, 'shamil suraweera', 'shamilsuraweera@vrs.com', '123');
+INSERT INTO login (indexID, username, email, password) VALUES (1, 'Shamil Suraweera', 'shamil@vrs.com', '123');
+INSERT INTO login (indexID, username, email, password) VALUES (2, 'Ashan Suraweera', 'ashan@vrs.com', '123');
+INSERT INTO login (indexID, username, email, password) VALUES (3, 'John Doe', 'john@vrs.com', '123');
 
 -- Insert Check Status Records
 INSERT INTO checkstatus (applicationnum, vehiclenum, applicationstatus) VALUES ('1234AA', 'BX-7878', '1');

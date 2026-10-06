@@ -88,10 +88,9 @@ $CP = "build\classes;lib\ojdbc11.jar"
 ### User Accounts for Login:
 | Username | Email | Password |
 | :--- | :--- | :--- |
-| **Shamil Suraweera** | `shamilsuraweera@vrs.com` | `123` |
-| **Ashan** | `ashan@vrs.com` | `123` |
-| **John** | `john@vrs.com` | `123` |
-| **Lakma** | `lakma@gmail.com` | `Lakma@123` |
+| **Shamil Suraweera** | `shamil@vrs.com` | `123` |
+| **Ashan Suraweera** | `ashan@vrs.com` | `123` |
+| **John Doe** | `john@vrs.com` | `123` |
 
 ### Check Status Test Records:
 | Application No | Vehicle No | Expected Progress |

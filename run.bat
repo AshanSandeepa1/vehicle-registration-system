@@ -14,7 +14,10 @@ if %errorlevel% equ 0 (
     set "JAVA_BIN=java"
     set "JAVAC_BIN=javac"
 ) else (
-    if exist "C:\Users\shamil\.vscode\extensions\redhat.java-1.56.0-win32-x64\jre\21.0.12.1-win32-x86_64\bin\java.exe" (
+    if exist "C:\Users\shamil\develop\oracleJdk-27\bin\java.exe" (
+        set "JAVA_BIN=C:\Users\shamil\develop\oracleJdk-27\bin\java.exe"
+        set "JAVAC_BIN=C:\Users\shamil\develop\oracleJdk-27\bin\javac.exe"
+    ) else if exist "C:\Users\shamil\.vscode\extensions\redhat.java-1.56.0-win32-x64\jre\21.0.12.1-win32-x86_64\bin\java.exe" (
         set "JAVA_BIN=C:\Users\shamil\.vscode\extensions\redhat.java-1.56.0-win32-x64\jre\21.0.12.1-win32-x86_64\bin\java.exe"
         set "JAVAC_BIN=C:\Users\shamil\.vscode\extensions\redhat.java-1.56.0-win32-x64\jre\21.0.12.1-win32-x86_64\bin\javac.exe"
     ) else if defined JAVA_HOME (
