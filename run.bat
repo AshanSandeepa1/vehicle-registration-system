@@ -43,7 +43,7 @@ if not exist "build\classes\Images" mkdir "build\classes\Images"
 if exist "src\Images" xcopy /y /q "src\Images\*" "build\classes\Images\" >nul 2>&1
 
 :: Classpath setup
-set "CP=build\classes;lib\jcalendar-1.4.jar;lib\ojdbc11.jar;lib\h2-2.2.224.jar;src"
+set "CP=build\classes;lib\flatlaf-3.5.4.jar;lib\jcalendar-1.4.jar;lib\ojdbc11.jar;lib\h2-2.2.224.jar;src"
 
 :: Compile Java sources
 echo [VRS] Compiling sources...

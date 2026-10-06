@@ -7,7 +7,7 @@ package vehicleregsystem;
 import Model.DBConnection;
 import View.vrsView;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
+import util.ThemeUtil;
 
 /**
  * Main entry point for the Vehicle Registration System (VRS).
@@ -29,17 +29,8 @@ public class VehicleRegSystem {
             System.err.println("[VRS] Database warning: " + e.getMessage());
         }
 
-        // Apply Nimbus or system Look and Feel for modern appearance
-        try {
-            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (Exception e) {
-            // Default look and feel is fine
-        }
+        // Apply WordPress Dashboard Theme globally via FlatLaf
+        ThemeUtil.initGlobalTheme();
 
         // Launch the Main Application Window
         SwingUtilities.invokeLater(() -> {

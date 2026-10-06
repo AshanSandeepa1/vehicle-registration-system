@@ -34,6 +34,7 @@ public class vrsView extends javax.swing.JFrame {
          admin.setVisible(false);
          setupFirstRegistrationTab();
          setupAdminTab();
+         applyWordPressTheme();
     }
 
     /**
@@ -2469,23 +2470,28 @@ public class vrsView extends javax.swing.JFrame {
         }
     } **/
     
-    private void jLabelhomeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelhomeMouseClicked
+    private void jLabelhomeMouseClicked(java.awt.event.MouseEvent evt) {
+        updateActiveNav(home);//GEN-FIRST:event_jLabelhomeMouseClicked
         switchTabs(homeTab, mainPane);
     }//GEN-LAST:event_jLabelhomeMouseClicked
 
-    private void jLabelsearchMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelsearchMouseClicked
+    private void jLabelsearchMouseClicked(java.awt.event.MouseEvent evt) {
+        updateActiveNav(checkStatus);//GEN-FIRST:event_jLabelsearchMouseClicked
         switchTabs(checkStatusTab, mainPane);
     }//GEN-LAST:event_jLabelsearchMouseClicked
 
-    private void jLabelinventoryMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelinventoryMouseClicked
+    private void jLabelinventoryMouseClicked(java.awt.event.MouseEvent evt) {
+        updateActiveNav(firstRegistration);//GEN-FIRST:event_jLabelinventoryMouseClicked
         switchTabs(firstRegistrationTab, mainPane);
     }//GEN-LAST:event_jLabelinventoryMouseClicked
 
-    private void jLabelpharmaciesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelpharmaciesMouseClicked
+    private void jLabelpharmaciesMouseClicked(java.awt.event.MouseEvent evt) {
+        updateActiveNav(ownershipTransfer);//GEN-FIRST:event_jLabelpharmaciesMouseClicked
         switchTabs(ownershipTransferTab, mainPane);
     }//GEN-LAST:event_jLabelpharmaciesMouseClicked
 
-    private void jLabelusersMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelusersMouseClicked
+    private void jLabelusersMouseClicked(java.awt.event.MouseEvent evt) {
+        updateActiveNav(admin);//GEN-FIRST:event_jLabelusersMouseClicked
         refreshAdminTables();
         switchTabs(adminTab, mainPane);
     }//GEN-LAST:event_jLabelusersMouseClicked
@@ -3359,6 +3365,167 @@ public class vrsView extends javax.swing.JFrame {
         }
         if (adminUsersTableModel != null) {
             new Model.DBSearch().loadUsersTable(adminUsersTableModel);
+        }
+    }
+
+
+    // =========================================================================
+    // WordPress Dashboard Theme Implementation
+    // =========================================================================
+    private javax.swing.JPanel currentActiveNav;
+
+    private void updateActiveNav(javax.swing.JPanel activeNav) {
+        javax.swing.JPanel[] navs = new javax.swing.JPanel[]{home, checkStatus, firstRegistration, ownershipTransfer, admin, exit};
+        javax.swing.JLabel[] lbls = new javax.swing.JLabel[]{jLabelhome, jLabelsearch, jLabelinventory, jLabelpharmacies, jLabelusers, jLabelexit};
+        for (int i = 0; i < navs.length; i++) {
+            if (navs[i] == activeNav) {
+                util.ThemeUtil.setSidebarState(navs[i], lbls[i], true);
+            } else {
+                util.ThemeUtil.setSidebarState(navs[i], lbls[i], false);
+            }
+        }
+        currentActiveNav = activeNav;
+    }
+
+    private void applyWordPressTheme() {
+        setTitle("Department of Motor Traffic - Vehicle Registration System (VRS)");
+
+        // 1. Sidebar Theme
+        sidePanel.setBackground(util.ThemeUtil.SIDEBAR_BG);
+        sidePanel.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 0, 1, new java.awt.Color(0x13, 0x17, 0x1A)));
+
+        VRS.setBackground(util.ThemeUtil.SIDEBAR_HEADER_BG);
+        VRS.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(0x2C, 0x33, 0x38)));
+        jLabelvrs.setText("🚗  VRS PORTAL");
+        jLabelvrs.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 15));
+        jLabelvrs.setForeground(java.awt.Color.WHITE);
+
+        jLabelhome.setText("🏠  Dashboard");
+        jLabelsearch.setText("🔍  Check Status");
+        jLabelinventory.setText("📝  First Registration");
+        jLabelpharmacies.setText("🔄  Transfer Ownership");
+        jLabelusers.setText("⚙️  Admin Panel");
+        jLabelexit.setText("🚪  Exit System");
+
+        // Set cursor and hover for sidebar items
+        javax.swing.JPanel[] navPanels = new javax.swing.JPanel[]{home, checkStatus, firstRegistration, ownershipTransfer, admin, exit};
+        javax.swing.JLabel[] navLabels = new javax.swing.JLabel[]{jLabelhome, jLabelsearch, jLabelinventory, jLabelpharmacies, jLabelusers, jLabelexit};
+
+        for (int i = 0; i < navPanels.length; i++) {
+            final javax.swing.JPanel p = navPanels[i];
+            final javax.swing.JLabel l = navLabels[i];
+            p.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+            util.ThemeUtil.addSidebarHover(p, l, () -> p == currentActiveNav);
+        }
+
+        updateActiveNav(home);
+
+        // 2. Canvas & Main Containers
+        bg.setBackground(util.ThemeUtil.CANVAS_BG);
+        mainPanel.setBackground(util.ThemeUtil.CANVAS_BG);
+        mainPane.setBackground(util.ThemeUtil.CANVAS_BG);
+        homeTab.setBackground(util.ThemeUtil.CANVAS_BG);
+        checkStatusTab.setBackground(util.ThemeUtil.CANVAS_BG);
+        ownershipTransferTab.setBackground(util.ThemeUtil.CANVAS_BG);
+
+        // 3. Home Tab & Login/Register Cards
+        homePanel.setBackground(util.ThemeUtil.CANVAS_BG);
+        jScrollPane2.setBorder(javax.swing.BorderFactory.createLineBorder(util.ThemeUtil.BORDER_LIGHT));
+        jTextArea2.setBackground(java.awt.Color.WHITE);
+        jTextArea2.setForeground(util.ThemeUtil.TEXT_DARK);
+        jTextArea2.setFont(new java.awt.Font("Segoe UI", java.awt.Font.PLAIN, 14));
+        jTextArea2.setBorder(javax.swing.BorderFactory.createEmptyBorder(15, 15, 15, 15));
+
+        util.ThemeUtil.stylePrimaryButton(LOGIN);
+        LOGIN.setText("Log In");
+        util.ThemeUtil.styleSecondaryButton(REGISTER);
+        REGISTER.setText("Register");
+
+        util.ThemeUtil.styleCard(loginPanel);
+        util.ThemeUtil.styleInput(loginEmailTF);
+        util.ThemeUtil.stylePrimaryButton(loginBtn);
+        loginBtn.setText("Sign In");
+        jLabel3.setFont(util.ThemeUtil.FONT_BOLD);
+        jLabel3.setForeground(util.ThemeUtil.TEXT_DARK);
+        jLabel4.setFont(util.ThemeUtil.FONT_BOLD);
+        jLabel4.setForeground(util.ThemeUtil.TEXT_DARK);
+
+        util.ThemeUtil.styleCard(registerPanel);
+        util.ThemeUtil.styleInput(regUsernameTF);
+        util.ThemeUtil.styleInput(regEmailTF);
+        util.ThemeUtil.stylePrimaryButton(regSubmitBtn);
+        regSubmitBtn.setText("Create Account");
+        usernameLabel.setFont(util.ThemeUtil.FONT_BOLD);
+        usernameLabel.setForeground(util.ThemeUtil.TEXT_DARK);
+        emailLabel.setFont(util.ThemeUtil.FONT_BOLD);
+        emailLabel.setForeground(util.ThemeUtil.TEXT_DARK);
+        passwordLabel.setFont(util.ThemeUtil.FONT_BOLD);
+        passwordLabel.setForeground(util.ThemeUtil.TEXT_DARK);
+        conpasswordLabel.setFont(util.ThemeUtil.FONT_BOLD);
+        conpasswordLabel.setForeground(util.ThemeUtil.TEXT_DARK);
+
+        // 4. Check Status Tab
+        util.ThemeUtil.styleInput(applicationNumTF);
+        util.ThemeUtil.styleInput(vehicleNumTF);
+        util.ThemeUtil.stylePrimaryButton(SubmitCheckStatusBtn);
+        SubmitCheckStatusBtn.setText("Search Status");
+
+        jLabel15.setForeground(util.ThemeUtil.TEXT_DARK);
+        jLabel15.setFont(util.ThemeUtil.FONT_TITLE);
+        jLabel16.setForeground(util.ThemeUtil.TEXT_DARK);
+        jLabel16.setFont(util.ThemeUtil.FONT_BOLD);
+        jLabel17.setForeground(util.ThemeUtil.TEXT_DARK);
+        jLabel17.setFont(util.ThemeUtil.FONT_BOLD);
+
+        javax.swing.JCheckBox[] cbs = new javax.swing.JCheckBox[]{jCheckBox1, jCheckBox2, jCheckBox3, jCheckBox4, jCheckBox5};
+        for (javax.swing.JCheckBox cb : cbs) {
+            cb.setBackground(java.awt.Color.WHITE);
+            cb.setForeground(util.ThemeUtil.TEXT_DARK);
+            cb.setFont(util.ThemeUtil.FONT_BOLD);
+        }
+
+        // 5. Ownership Transfer Sub-Tabs
+        javax.swing.JPanel[] transferTabs = new javax.swing.JPanel[]{
+            vehicleDetailsTab, transferorDetailsTab, transfereeDetailsTab,
+            witnessDetailsTab, documentsTab, submitTab, paymentTab, confirmationTab
+        };
+        for (javax.swing.JPanel p : transferTabs) {
+            p.setBackground(java.awt.Color.WHITE);
+            p.setBorder(javax.swing.BorderFactory.createCompoundBorder(
+                javax.swing.BorderFactory.createEmptyBorder(10, 10, 10, 10),
+                javax.swing.BorderFactory.createLineBorder(util.ThemeUtil.BORDER_LIGHT, 1)
+            ));
+        }
+
+        // Style Next and Action Buttons
+        javax.swing.JButton[] nextButtons = new javax.swing.JButton[]{
+            nextBtn, nextBtn1, nextBtn2, nextBtn3, nextBtn4, confirmBtn, doneBtn,
+            regCertUploadBtn, vehicleRevLicenseBtn, NICuploadBtn2, marrCertBtn, partnershipBtn
+        };
+        for (javax.swing.JButton b : nextButtons) {
+            util.ThemeUtil.stylePrimaryButton(b);
+        }
+
+        util.ThemeUtil.stylePrimaryButton(btnOneDayService);
+        util.ThemeUtil.styleSecondaryButton(btnNormalService);
+
+        // Style text inputs in ownership transfer
+        javax.swing.JTextField[] inputs = new javax.swing.JTextField[]{
+            numbersTF, cvvTF, cardNoTF
+        };
+        for (javax.swing.JTextField tf : inputs) {
+            util.ThemeUtil.styleInput(tf);
+        }
+
+        // Style radio buttons
+        javax.swing.JRadioButton[] rbs = new javax.swing.JRadioButton[]{
+            carRB, bikeRB, dualpRB, otherRB, tractorRB, threewheelRB,
+            petrolRB, dieselRB, electricRB
+        };
+        for (javax.swing.JRadioButton rb : rbs) {
+            rb.setBackground(java.awt.Color.WHITE);
+            rb.setForeground(util.ThemeUtil.TEXT_DARK);
+            rb.setFont(util.ThemeUtil.FONT_BODY);
         }
     }
 

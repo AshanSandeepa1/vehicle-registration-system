@@ -52,7 +52,7 @@ if (Test-Path "src\Images") {
 }
 
 # 4. Classpath setup
-$classpath = "build\classes;lib\jcalendar-1.4.jar;lib\ojdbc11.jar;lib\h2-2.2.224.jar;src"
+$classpath = "build\classes;lib\flatlaf-3.5.4.jar;lib\jcalendar-1.4.jar;lib\ojdbc11.jar;lib\h2-2.2.224.jar;src"
 
 # 5. Compile sources
 Write-Host "[VRS] Compiling sources..." -ForegroundColor Yellow
