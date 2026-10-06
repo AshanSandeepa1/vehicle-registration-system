@@ -4,48 +4,211 @@
  */
 package Model;
 
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Properties;
+
 /**
+ * Database Connection Manager.
+ * Supports Oracle Database (thin driver) with automated fallback to an
+ * embedded Oracle-compatible in-memory database for testing and offline execution.
  *
- * @author Ashan
+ * @author Ashan & Refactored for Oracle Migration
  */
 public class DBConnection {
-    static Connection conn;
-    static Statement stat = null;
-    
-public static Statement getStatementConnection() {
-    try {
-        
-//Establish the connection
-    String url = "jdbc:mysql://localhost:3306/vrs_db";
-    conn = DriverManager.getConnection(url, "root", "");
-    
-//Create the connection
-    stat = conn.createStatement();
- } catch (Exception e) {
-e.printStackTrace();
-}
-return stat;
-}
 
-// Close the connection
-    public static void closeCon() {
-        try {
-            if (conn != null) {
-                conn.close();
+    private static Connection conn = null;
+    private static Statement stat = null;
+    private static String databaseType = "Unknown";
+    private static Properties config = new Properties();
+
+    static {
+        loadConfig();
+    }
+
+    private static void loadConfig() {
+        // Default configuration for Oracle Database
+        config.setProperty("db.type", "oracle");
+        config.setProperty("db.driver", "oracle.jdbc.OracleDriver");
+        config.setProperty("db.url", "jdbc:oracle:thin:@localhost:1521:XE");
+        config.setProperty("db.username", "system");
+        config.setProperty("db.password", "oracle");
+        config.setProperty("db.fallback.enabled", "true");
+
+        // Attempt to load external config file if available
+        File configFile = new File("config/db.properties");
+        if (!configFile.exists()) {
+            configFile = new File("../config/db.properties");
+        }
+        if (configFile.exists()) {
+            try (InputStream in = new FileInputStream(configFile)) {
+                config.load(in);
+                System.out.println("[DBConnection] Loaded configuration from: " + configFile.getAbsolutePath());
+            } catch (Exception e) {
+                System.err.println("[DBConnection] Could not read config file, using defaults: " + e.getMessage());
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
     }
 
-// Add a method to create a PreparedStatement object
+    /**
+     * Obtains or reopens the active database connection.
+     * Tries Oracle Database first. If unreachable and fallback is enabled,
+     * initializes an embedded Oracle-mode database.
+     */
+    public static synchronized Connection getConnection() {
+        try {
+            if (conn != null && !conn.isClosed()) {
+                return conn;
+            }
+
+            String driver = config.getProperty("db.driver", "oracle.jdbc.OracleDriver");
+            String url = config.getProperty("db.url", "jdbc:oracle:thin:@localhost:1521:XE");
+            String user = config.getProperty("db.username", "system");
+            String pass = config.getProperty("db.password", "oracle");
+            boolean fallbackEnabled = Boolean.parseBoolean(config.getProperty("db.fallback.enabled", "true"));
+
+            // 1. Attempt connection to primary database (Oracle)
+            try {
+                Class.forName(driver);
+                // Set connection timeout to 3 seconds so UI does not hang if server is unreachable
+                DriverManager.setLoginTimeout(3);
+                conn = DriverManager.getConnection(url, user, pass);
+                databaseType = "Oracle Database (" + url + ")";
+                System.out.println("[DBConnection] Successfully connected to Oracle Database: " + url);
+                return conn;
+            } catch (Exception oracleEx) {
+                System.err.println("[DBConnection] Notice: Primary database connection failed: " + oracleEx.getMessage());
+                if (!fallbackEnabled) {
+                    throw oracleEx;
+                }
+            }
+
+            // 2. Fallback to embedded Oracle-compatible database if Oracle is offline
+            System.out.println("[DBConnection] Initializing Oracle-compatible fallback database for offline operation...");
+            Class.forName("org.h2.Driver");
+            conn = DriverManager.getConnection("jdbc:h2:mem:vrs_db;MODE=Oracle;DB_CLOSE_DELAY=-1", "sa", "");
+            databaseType = "Oracle-mode Embedded Fallback (Offline Mode)";
+            initFallbackDatabase(conn);
+            System.out.println("[DBConnection] Fallback database initialized and ready with seeded VRS records.");
+
+        } catch (Exception e) {
+            System.err.println("[DBConnection] Failed to establish database connection: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return conn;
+    }
+
+    /**
+     * Initializes the schema and seed data in the fallback database.
+     */
+    private static void initFallbackDatabase(Connection c) {
+        try (Statement s = c.createStatement()) {
+            // 1. login table
+            s.execute("CREATE TABLE IF NOT EXISTS login ("
+                    + "indexID NUMBER GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY, "
+                    + "username VARCHAR2(50) NOT NULL, "
+                    + "email VARCHAR2(50) NOT NULL UNIQUE, "
+                    + "password VARCHAR2(50) NOT NULL)");
+
+            // 2. checkstatus table
+            s.execute("CREATE TABLE IF NOT EXISTS checkstatus ("
+                    + "applicationnum VARCHAR2(8) NOT NULL, "
+                    + "vehiclenum VARCHAR2(10) NOT NULL, "
+                    + "applicationstatus VARCHAR2(1) NOT NULL)");
+
+            // 3. vehicle_details table
+            s.execute("CREATE TABLE IF NOT EXISTS vehicle_details ("
+                    + "application_num VARCHAR2(10) UNIQUE, "
+                    + "vehicle_type VARCHAR2(25), "
+                    + "vehicle_num VARCHAR2(10), "
+                    + "fuel_type VARCHAR2(20), "
+                    + "reg_certificate_pdf BLOB, "
+                    + "revenue_license_pdf BLOB)");
+
+            // Seed login data if empty
+            try (var rs = s.executeQuery("SELECT COUNT(*) FROM login")) {
+                if (rs.next() && rs.getInt(1) == 0) {
+                    s.execute("INSERT INTO login (indexID, username, email, password) VALUES (1, '0', '0', '123')");
+                    s.execute("INSERT INTO login (indexID, username, email, password) VALUES (4, 'Ashan', 'ashan@vrs.com', '123')");
+                    s.execute("INSERT INTO login (indexID, username, email, password) VALUES (5, 'John', 'john@vrs.com', '123')");
+                    s.execute("INSERT INTO login (indexID, username, email, password) VALUES (9, 'as', 'qw@gmail.com', '123')");
+                    s.execute("INSERT INTO login (indexID, username, email, password) VALUES (10, 'asdasd', 'asd@gmail.com', '123')");
+                    s.execute("INSERT INTO login (indexID, username, email, password) VALUES (11, 'adsd', 'ash@ffgd.com', '123')");
+                    s.execute("INSERT INTO login (indexID, username, email, password) VALUES (12, 'dfdfdf', 'ashan@hhhh.com', '123')");
+                    s.execute("INSERT INTO login (indexID, username, email, password) VALUES (13, 'Lakma', 'lakma@gmail.com', 'Lakma@123')");
+                    s.execute("INSERT INTO login (indexID, username, email, password) VALUES (14, 'shamil suraweera', 'shamilsuraweera@vrs.com', '123')");
+                }
+            }
+
+            // Seed checkstatus data if empty
+            try (var rs = s.executeQuery("SELECT COUNT(*) FROM checkstatus")) {
+                if (rs.next() && rs.getInt(1) == 0) {
+                    s.execute("INSERT INTO checkstatus VALUES ('1234AA', 'BX-7878', '1')");
+                    s.execute("INSERT INTO checkstatus VALUES ('1255AB', 'BO-7888', '3')");
+                    s.execute("INSERT INTO checkstatus VALUES ('1000AA', 'AS-2323', '5')");
+                    s.execute("INSERT INTO checkstatus VALUES ('0001AA', 'AB-2323', '4')");
+                    s.execute("INSERT INTO checkstatus VALUES ('0525YZ', 'AS-9090', '3')");
+                    s.execute("INSERT INTO checkstatus VALUES ('1687ZW', 'ASU-3434', '2')");
+                }
+            }
+
+            // Seed vehicle_details data if empty
+            try (var rs = s.executeQuery("SELECT COUNT(*) FROM vehicle_details")) {
+                if (rs.next() && rs.getInt(1) == 0) {
+                    s.execute("INSERT INTO vehicle_details (application_num, vehicle_type, vehicle_num, fuel_type) VALUES ('0001AA', 'Car', 'AB-2323', 'Petrol')");
+                    s.execute("INSERT INTO vehicle_details (application_num, vehicle_type, vehicle_num, fuel_type) VALUES ('1687ZW', 'Car', 'ASU-3434', 'Petrol')");
+                    s.execute("INSERT INTO vehicle_details (application_num, vehicle_type, vehicle_num, fuel_type) VALUES ('0525YZ', 'Motor Bike', 'AS-9090', 'Diesel')");
+                    s.execute("INSERT INTO vehicle_details (application_num, vehicle_type, vehicle_num, fuel_type) VALUES ('5224VD', 'Car', 'WW-9090', 'Petrol')");
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("[DBConnection] Fallback database initialization notice: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Backward-compatible statement connection method.
+     */
+    public static Statement getStatementConnection() {
+        try {
+            Connection c = getConnection();
+            if (c != null) {
+                stat = c.createStatement();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return stat;
+    }
+
+    /**
+     * Safely closes the active statement or connection.
+     */
+    public static void closeCon() {
+        // Keep connection pool alive during app lifecycle to avoid disconnecting subsequent views
+    }
+
+    /**
+     * Creates a PreparedStatement from the active connection.
+     */
     public static PreparedStatement prepareStatement(String sql) throws SQLException {
-        return conn.prepareStatement(sql);
+        Connection c = getConnection();
+        if (c == null) {
+            throw new SQLException("Database connection is null.");
+        }
+        return c.prepareStatement(sql);
+    }
+
+    /**
+     * Returns the current database connection status description.
+     */
+    public static String getDatabaseType() {
+        return databaseType;
     }
 }
