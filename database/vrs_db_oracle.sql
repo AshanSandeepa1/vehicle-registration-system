@@ -49,10 +49,12 @@ CREATE TABLE login (
 -- 5: Vehicle Registration Document Released (via Post)
 -- ----------------------------------------------------------------------------
 CREATE TABLE checkstatus (
-    applicationnum     VARCHAR2(8)  NOT NULL,
-    vehiclenum         VARCHAR2(10) NOT NULL,
+    applicationnum     VARCHAR2(8)  NOT NULL CONSTRAINT pk_checkstatus PRIMARY KEY,
+    vehiclenum         VARCHAR2(20) NOT NULL,
     applicationstatus  VARCHAR2(1)  NOT NULL
 );
+
+CREATE INDEX idx_checkstatus_vehnum ON checkstatus(vehiclenum);
 
 -- ----------------------------------------------------------------------------
 -- 3. Table: vehicle_details
@@ -61,11 +63,13 @@ CREATE TABLE checkstatus (
 CREATE TABLE vehicle_details (
     application_num      VARCHAR2(10) CONSTRAINT uq_veh_app_num UNIQUE,
     vehicle_type         VARCHAR2(25),
-    vehicle_num          VARCHAR2(10),
+    vehicle_num          VARCHAR2(20),
     fuel_type            VARCHAR2(20),
     reg_certificate_pdf  BLOB,
     revenue_license_pdf  BLOB
 );
+
+CREATE INDEX idx_vehdetails_vehnum ON vehicle_details(vehicle_num);
 
 -- ============================================================================
 -- Seed Data / Initial Records

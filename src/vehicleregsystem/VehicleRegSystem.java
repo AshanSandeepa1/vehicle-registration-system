@@ -16,17 +16,17 @@ import util.ThemeUtil;
  */
 public class VehicleRegSystem {
 
+    private static final java.util.logging.Logger LOG = java.util.logging.Logger.getLogger(VehicleRegSystem.class.getName());
+
     public static void main(String[] args) {
-        System.out.println("=========================================================");
-        System.out.println("      Vehicle Registration System (VRS) Starting         ");
-        System.out.println("=========================================================");
+        LOG.info("Vehicle Registration System (VRS) starting up...");
 
         // Warm up and verify Database Connection (Oracle with offline fallback)
         try {
             DBConnection.getConnection();
-            System.out.println("[VRS] Active Database: " + DBConnection.getDatabaseType());
+            LOG.info(() -> "Active Database: " + DBConnection.getDatabaseType());
         } catch (Exception e) {
-            System.err.println("[VRS] Database warning: " + e.getMessage());
+            LOG.log(java.util.logging.Level.WARNING, "Database initialization warning: " + e.getMessage(), e);
         }
 
         // Apply WordPress Dashboard Theme globally via FlatLaf
@@ -38,10 +38,9 @@ public class VehicleRegSystem {
                 vrsView app = new vrsView();
                 app.setLocationRelativeTo(null);
                 app.setVisible(true);
-                System.out.println("[VRS] Vehicle Registration System GUI launched successfully.");
+                LOG.info("Vehicle Registration System GUI launched successfully.");
             } catch (Exception ex) {
-                System.err.println("[VRS] Error launching GUI: " + ex.getMessage());
-                ex.printStackTrace();
+                LOG.log(java.util.logging.Level.SEVERE, "Error launching GUI: " + ex.getMessage(), ex);
             }
         });
     }

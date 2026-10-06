@@ -1,19 +1,14 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Controller;
 
 import View.vrsView;
-import Model.DBConnection;
 import Model.DBSearch;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 public class LoginController {
+
+    private static final Logger LOG = Logger.getLogger(LoginController.class.getName());
 
     public static void login(String loginEmail, String loginPass) {
         if (loginEmail == null || loginEmail.trim().isEmpty()) {
@@ -27,28 +22,11 @@ public class LoginController {
         }
 
         try {
-            String email = null;
-            String password = null;
-            ResultSet rs = new DBSearch().searchLogin(loginEmail.trim());
+            DBSearch.UserAccount user = new DBSearch().findUserByEmail(loginEmail.trim());
 
-            if (rs != null) {
-                while (rs.next()) {
-                    try {
-                        email = rs.getString("email");
-                    } catch (SQLException ex) {
-                        email = rs.getString("EMAIL");
-                    }
-                    try {
-                        password = rs.getString("password");
-                    } catch (SQLException ex) {
-                        password = rs.getString("PASSWORD");
-                    }
-                }
-            }
-
-            if (email != null && password != null) {
-                if (password.equals(loginPass)) {
-                    System.out.println("[LoginController] Login Successful for: " + email);
+            if (user != null) {
+                if (user.password().equals(loginPass)) {
+                    LOG.info(() -> "Login successful for: " + user.email());
 
                     // Actions after successful login
                     vrsView.switchTabs(vrsView.homePanel, vrsView.logregLayeredPane);
@@ -57,7 +35,7 @@ public class LoginController {
                     vrsView.firstRegistration.setVisible(true);
                     vrsView.ownershipTransfer.setVisible(true);
                     vrsView.admin.setVisible(true);
-                    JOptionPane.showMessageDialog(null, "Welcome! Login Successful.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Welcome, " + user.username() + "! Login Successful.", "Success", JOptionPane.INFORMATION_MESSAGE);
                 } else {
                     JOptionPane.showMessageDialog(null, "Incorrect Password", "Error", JOptionPane.ERROR_MESSAGE);
                 }
@@ -65,8 +43,8 @@ public class LoginController {
                 JOptionPane.showMessageDialog(null, "Email not found. Please register first.", "Error", JOptionPane.ERROR_MESSAGE);
             }
 
-        } catch (SQLException ex) {
-            Logger.getLogger(LoginController.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Unexpected error during login", ex);
             JOptionPane.showMessageDialog(null, "Database Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -95,15 +73,17 @@ public class LoginController {
         }
 
         // Proceed with registration
-        new Model.DBSearch().addUser(regUsername.trim(), regEmail.trim(), regPassword);
-        JOptionPane.showMessageDialog(null, "You are successfully registered. Please login.", "Successful", JOptionPane.INFORMATION_MESSAGE);
-
-        // Set Login Visible
-        vrsView.switchTabs(vrsView.loginPanel, vrsView.logregLayeredPane);
+        boolean ok = new Model.DBSearch().addUser(regUsername.trim(), regEmail.trim(), regPassword);
+        if (ok) {
+            JOptionPane.showMessageDialog(null, "You are successfully registered. Please login.", "Successful", JOptionPane.INFORMATION_MESSAGE);
+            vrsView.switchTabs(vrsView.loginPanel, vrsView.logregLayeredPane);
+        } else {
+            JOptionPane.showMessageDialog(null, "Registration failed. An account with this email may already exist.", "Registration Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private static boolean isValidEmail(String email) {
         String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
-        return email.matches(emailRegex);
+        return email != null && email.matches(emailRegex);
     }
 }

@@ -2467,12 +2467,6 @@ public class vrsView extends javax.swing.JFrame {
         pane.repaint();
     }
     
-   /** public void placeholderChecker(JTextField textfield, String Text){
-        if(textfield.getText().equals("")) {
-            textfield.setText(Text);
-        }
-    } **/
-    
     private void jLabelhomeMouseClicked(java.awt.event.MouseEvent evt) {
         updateActiveNav(home);//GEN-FIRST:event_jLabelhomeMouseClicked
         switchTabs(homeTab, mainPane);
@@ -2504,59 +2498,49 @@ public class vrsView extends javax.swing.JFrame {
     }//GEN-LAST:event_LOGINActionPerformed
 
     private void REGISTERActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_REGISTERActionPerformed
-        switchTabs(registerPanel, logregLayeredPane);// TODO add your handling code here:
+        switchTabs(registerPanel, logregLayeredPane);
     }//GEN-LAST:event_REGISTERActionPerformed
 
     private void regUsernameTFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_regUsernameTFActionPerformed
-        
     }//GEN-LAST:event_regUsernameTFActionPerformed
 
     private void regUsernameTFFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_regUsernameTFFocusLost
-        //placeholderChecker(regUsernameTF, "user.name");
     }//GEN-LAST:event_regUsernameTFFocusLost
 
     private void regSubmitBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_regSubmitBtnActionPerformed
-        LoginController.userRegister(regUsernameTF.getText(),regEmailTF.getText(), regPassTF.getText(), regConfirmPassTF.getText());
+        util.ThemeUtil.runWithSubmitGuard(regSubmitBtn, () -> {
+            LoginController.userRegister(regUsernameTF.getText(), regEmailTF.getText(), regPassTF.getText(), regConfirmPassTF.getText());
+        });
     }//GEN-LAST:event_regSubmitBtnActionPerformed
 
     private void regUsernameTFFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_regUsernameTFFocusGained
-        //regUsernameTF.setText(""); 
     }//GEN-LAST:event_regUsernameTFFocusGained
 
     private void regEmailTFFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_regEmailTFFocusGained
-        //regEmailTF.setText("");
     }//GEN-LAST:event_regEmailTFFocusGained
 
     private void regEmailTFFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_regEmailTFFocusLost
-       // placeholderChecker(regEmailTF, "user@cureall.com");
     }//GEN-LAST:event_regEmailTFFocusLost
 
     private void regPassTFFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_regPassTFFocusGained
-        //regPassTF.setText("");
     }//GEN-LAST:event_regPassTFFocusGained
 
     private void regPassTFFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_regPassTFFocusLost
-        //placeholderChecker(regPassTF, "Password");
     }//GEN-LAST:event_regPassTFFocusLost
 
     private void regConfirmPassTFFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_regConfirmPassTFFocusGained
-        //regConfirmPassTF.setText("");
     }//GEN-LAST:event_regConfirmPassTFFocusGained
 
     private void regConfirmPassTFFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_regConfirmPassTFFocusLost
-      //  placeholderChecker(regConfirmPassTF, "Password");
     }//GEN-LAST:event_regConfirmPassTFFocusLost
 
     private void loginEmailTFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginEmailTFActionPerformed
-        // TODO add your handling code here:
     }//GEN-LAST:event_loginEmailTFActionPerformed
 
     private void applicationNumTFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_applicationNumTFActionPerformed
-        // TODO add your handling code here:
     }//GEN-LAST:event_applicationNumTFActionPerformed
 
     private void vehicleNumTFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_vehicleNumTFActionPerformed
-        // TODO add your handling code here:
     }//GEN-LAST:event_vehicleNumTFActionPerformed
 
     private void jCheckBox2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox2ActionPerformed
@@ -2664,42 +2648,43 @@ public class vrsView extends javax.swing.JFrame {
     }//GEN-LAST:event_cvvTFActionPerformed
 
     private void confirmBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_confirmBtnActionPerformed
-        String appNum = util.ApplicationIdGenerator.generateFormattedString();
-        applicationNumLbl.setText(appNum);
+        util.ThemeUtil.runWithSubmitGuard(confirmBtn, () -> {
+            String vehNum = (numbersTF != null && !numbersTF.getText().trim().isEmpty()) ? numbersTF.getText().trim() : "";
+            String vehType = "Car";
+            if (bikeRB != null && bikeRB.isSelected()) vehType = "Motor Bike";
+            else if (dualpRB != null && dualpRB.isSelected()) vehType = "Dual Purpose";
+            else if (tractorRB != null && tractorRB.isSelected()) vehType = "Tractor";
+            else if (threewheelRB != null && threewheelRB.isSelected()) vehType = "Three Wheeler";
 
-        String vehNum = (numbersTF != null && !numbersTF.getText().trim().isEmpty()) ? numbersTF.getText().trim() : "TRANS-" + appNum;
-        String vehType = "Car";
-        if (bikeRB != null && bikeRB.isSelected()) vehType = "Motor Bike";
-        else if (dualpRB != null && dualpRB.isSelected()) vehType = "Dual Purpose";
-        else if (tractorRB != null && tractorRB.isSelected()) vehType = "Tractor";
-        else if (threewheelRB != null && threewheelRB.isSelected()) vehType = "Three Wheeler";
+            String fuel = "Petrol";
+            if (dieselRB != null && dieselRB.isSelected()) fuel = "Diesel";
+            else if (electricRB != null && electricRB.isSelected()) fuel = "Electric";
 
-        String fuel = "Petrol";
-        if (dieselRB != null && dieselRB.isSelected()) fuel = "Diesel";
-        else if (electricRB != null && electricRB.isSelected()) fuel = "Electric";
-
-        new Model.DBSearch().addCheckStatus(appNum, vehNum, "1");
-        new Model.DBSearch().addVehicleDetails(appNum, vehType, vehNum, fuel);
-
-        switchTabs(confirmationTab, ownershipTransferLayeredPane);
+            String appNum = new Model.DBSearch().submitNewApplication(vehType, vehNum.isEmpty() ? "TRANSFER" : vehNum, fuel);
+            if (appNum == null) {
+                util.ThemeUtil.showError(this, "Submission Error", "Failed to submit ownership transfer application. Please check database connection.");
+                return;
+            }
+            applicationNumLbl.setText(appNum);
+            switchTabs(confirmationTab, ownershipTransferLayeredPane);
+        });
     }//GEN-LAST:event_confirmBtnActionPerformed
 
     private void doneBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doneBtnActionPerformed
-        // TODO add your handling code here:
-        switchTabs(homeTab,mainPane );
+        switchTabs(homeTab, mainPane);
     }//GEN-LAST:event_doneBtnActionPerformed
 
     private void nextBtn4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nextBtn4ActionPerformed
-        // TODO add your handling code here:
-        switchTabs(documentsTab,ownershipTransferLayeredPane );
+        switchTabs(documentsTab, ownershipTransferLayeredPane);
     }//GEN-LAST:event_nextBtn4ActionPerformed
 
     private void regEmailTFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_regEmailTFActionPerformed
-        // TODO add your handling code here:
     }//GEN-LAST:event_regEmailTFActionPerformed
 
     private void loginBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginBtnActionPerformed
-        LoginController.login(loginEmailTF.getText(),loginPassTF.getText());
+        util.ThemeUtil.runWithSubmitGuard(loginBtn, () -> {
+            LoginController.login(loginEmailTF.getText(), loginPassTF.getText());
+        });
     }//GEN-LAST:event_loginBtnActionPerformed
 
     private void jLabelexitMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelexitMouseClicked
@@ -2707,15 +2692,15 @@ public class vrsView extends javax.swing.JFrame {
     }//GEN-LAST:event_jLabelexitMouseClicked
 
     private void jLabelexitMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelexitMouseEntered
-        // TODO add your handling code here:
     }//GEN-LAST:event_jLabelexitMouseEntered
 
     private void regConfirmPassTFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_regConfirmPassTFActionPerformed
-        // TODO add your handling code here:
     }//GEN-LAST:event_regConfirmPassTFActionPerformed
 
     private void SubmitCheckStatusBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SubmitCheckStatusBtnActionPerformed
-        SearchController.checkStatus(applicationNumTF.getText(), vehicleNumTF.getText());
+        util.ThemeUtil.runWithSubmitGuard(SubmitCheckStatusBtn, () -> {
+            SearchController.checkStatus(applicationNumTF.getText(), vehicleNumTF.getText());
+        });
     }//GEN-LAST:event_SubmitCheckStatusBtnActionPerformed
 
     /**
@@ -4212,44 +4197,48 @@ public class vrsView extends javax.swing.JFrame {
         javax.swing.JButton btnSubmit = new javax.swing.JButton("Submit Registration Application");
         util.ThemeUtil.stylePrimaryButton(btnSubmit);
         btnSubmit.addActionListener(e -> {
-            String vNum = tfVehNum.getText().trim();
-            String oName = tfOwnerName.getText().trim();
-            String oNic = tfOwnerNic.getText().trim();
+            util.ThemeUtil.runWithSubmitGuard(btnSubmit, () -> {
+                String vNum = tfVehNum.getText().trim();
+                String oName = tfOwnerName.getText().trim();
+                String oNic = tfOwnerNic.getText().trim();
 
-            if (vNum.isEmpty() || oName.isEmpty() || oNic.isEmpty()) {
-                util.ThemeUtil.showError(this, "Validation Error", "Please fill in all mandatory fields (Vehicle No, Owner Name, and Owner NIC).");
-                return;
-            }
+                if (vNum.isEmpty() || oName.isEmpty() || oNic.isEmpty()) {
+                    util.ThemeUtil.showError(this, "Validation Error", "Please fill in all mandatory fields (Vehicle No, Owner Name, and Owner NIC).");
+                    return;
+                }
 
-            String appNum = util.ApplicationIdGenerator.generateFormattedString();
-            String vType = cbType.getSelectedItem().toString();
-            String fuel = cbFuel.getSelectedItem().toString();
+                String vType = cbType.getSelectedItem().toString();
+                String fuel = cbFuel.getSelectedItem().toString();
 
-            try {
-                new Model.DBSearch().addCheckStatus(appNum, vNum, "1");
-                new Model.DBSearch().addVehicleDetails(appNum, vType, vNum, fuel);
+                try {
+                    String appNum = new Model.DBSearch().submitNewApplication(vType, vNum, fuel);
+                    if (appNum == null) {
+                        util.ThemeUtil.showError(this, "Submission Error", "Failed to save registration. Please check database connection.");
+                        return;
+                    }
 
-                util.ThemeUtil.showInfo(
-                    this,
-                    "Registration Successful",
-                    "Vehicle Registration Application successfully created!\n\n" +
-                    "Application Reference Number: " + appNum + "\n" +
-                    "Vehicle Number: " + vNum + "\n" +
-                    "Owner: " + oName + "\n\n" +
-                    "You can now track the approval status using the 'Check Status' tab."
-                );
+                    util.ThemeUtil.showInfo(
+                        this,
+                        "Registration Successful",
+                        "Vehicle Registration Application successfully created!\n\n" +
+                        "Application Reference Number: " + appNum + "\n" +
+                        "Vehicle Number: " + vNum + "\n" +
+                        "Owner: " + oName + "\n\n" +
+                        "You can now track the approval status using the 'Check Status' tab."
+                    );
 
-                tfVehNum.setText("");
-                tfEngine.setText("");
-                tfChassis.setText("");
-                tfOwnerName.setText("");
-                tfOwnerNic.setText("");
-                tfOwnerAddress.setText("");
-                docStatusLbl.setText("No document attached");
-                docStatusLbl.setForeground(util.ThemeUtil.TEXT_SECONDARY);
-            } catch (Exception ex) {
-                util.ThemeUtil.showError(this, "Database Error", "Failed to save registration: " + ex.getMessage());
-            }
+                    tfVehNum.setText("");
+                    tfEngine.setText("");
+                    tfChassis.setText("");
+                    tfOwnerName.setText("");
+                    tfOwnerNic.setText("");
+                    tfOwnerAddress.setText("");
+                    docStatusLbl.setText("No document attached");
+                    docStatusLbl.setForeground(util.ThemeUtil.TEXT_SECONDARY);
+                } catch (Exception ex) {
+                    util.ThemeUtil.showError(this, "Database Error", "Failed to save registration: " + ex.getMessage());
+                }
+            });
         });
 
         btnPanel.add(btnClear);
@@ -4299,10 +4288,7 @@ public class vrsView extends javax.swing.JFrame {
         ) {
             @Override public boolean isCellEditable(int r, int c) { return false; }
         };
-        adminStatusTable = new javax.swing.JTable(adminStatusTableModel);
-        adminStatusTable.setRowHeight(28);
-        adminStatusTable.setFont(util.ThemeUtil.FONT_BODY);
-        adminStatusTable.getTableHeader().setFont(util.ThemeUtil.FONT_BOLD);
+        adminStatusTable = util.ThemeUtil.createTable(adminStatusTableModel, "No applications found.");
         statusPanel.add(new javax.swing.JScrollPane(adminStatusTable), java.awt.BorderLayout.CENTER);
 
         // Status Control Bar
@@ -4378,10 +4364,7 @@ public class vrsView extends javax.swing.JFrame {
         ) {
             @Override public boolean isCellEditable(int r, int c) { return false; }
         };
-        javax.swing.JTable vehTable = new javax.swing.JTable(adminVehicleTableModel);
-        vehTable.setRowHeight(28);
-        vehTable.setFont(util.ThemeUtil.FONT_BODY);
-        vehTable.getTableHeader().setFont(util.ThemeUtil.FONT_BOLD);
+        javax.swing.JTable vehTable = util.ThemeUtil.createTable(adminVehicleTableModel, "No registered vehicles found.");
         vehPanel.add(new javax.swing.JScrollPane(vehTable), java.awt.BorderLayout.CENTER);
 
         javax.swing.JPanel vehControl = new javax.swing.JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
@@ -4401,10 +4384,7 @@ public class vrsView extends javax.swing.JFrame {
         ) {
             @Override public boolean isCellEditable(int r, int c) { return false; }
         };
-        javax.swing.JTable usersTable = new javax.swing.JTable(adminUsersTableModel);
-        usersTable.setRowHeight(28);
-        usersTable.setFont(util.ThemeUtil.FONT_BODY);
-        usersTable.getTableHeader().setFont(util.ThemeUtil.FONT_BOLD);
+        javax.swing.JTable usersTable = util.ThemeUtil.createTable(adminUsersTableModel, "No system users found.");
         usersPanel.add(new javax.swing.JScrollPane(usersTable), java.awt.BorderLayout.CENTER);
 
         javax.swing.JPanel usersControl = new javax.swing.JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));

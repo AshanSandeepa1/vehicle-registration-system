@@ -51,10 +51,8 @@ public final class DBConnection {
         config.setProperty("db.password", "oracle");
         config.setProperty("db.fallback.enabled", "true");
 
-        File configFile = new File("config/db.properties");
-        if (!configFile.exists()) {
-            configFile = new File("../config/db.properties");
-        }
+        File primary = new File("config/db.properties");
+        final File configFile = primary.exists() ? primary : new File("../config/db.properties");
         if (configFile.exists()) {
             try (InputStream in = new FileInputStream(configFile)) {
                 config.load(in);
@@ -165,18 +163,19 @@ public final class DBConnection {
 
             s.execute("CREATE TABLE IF NOT EXISTS checkstatus ("
                     + "applicationnum VARCHAR2(8) NOT NULL PRIMARY KEY, "
-                    + "vehiclenum VARCHAR2(10) NOT NULL, "
+                    + "vehiclenum VARCHAR2(20) NOT NULL, "
                     + "applicationstatus VARCHAR2(1) NOT NULL)");
 
             s.execute("CREATE TABLE IF NOT EXISTS vehicle_details ("
                     + "application_num VARCHAR2(10) UNIQUE, "
                     + "vehicle_type VARCHAR2(25), "
-                    + "vehicle_num VARCHAR2(10), "
+                    + "vehicle_num VARCHAR2(20), "
                     + "fuel_type VARCHAR2(20), "
                     + "reg_certificate_pdf BLOB, "
                     + "revenue_license_pdf BLOB)");
 
             s.execute("CREATE INDEX IF NOT EXISTS idx_checkstatus_vehiclenum ON checkstatus (vehiclenum)");
+            s.execute("CREATE INDEX IF NOT EXISTS idx_vehdetails_vehnum ON vehicle_details (vehicle_num)");
 
             if (isEmpty(s, "login")) {
                 s.execute("INSERT INTO login (indexID, username, email, password) VALUES (1, 'Shamil Suraweera', 'shamil@vrs.com', '123')");

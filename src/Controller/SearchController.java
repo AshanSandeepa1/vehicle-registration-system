@@ -1,14 +1,13 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Controller;
 
 import View.vrsView;
 import Model.DBSearch;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 public class SearchController {
+
+    private static final Logger LOG = Logger.getLogger(SearchController.class.getName());
 
     public static void checkStatus(String applicationNum, String vehicleNum) {
         if (applicationNum == null || applicationNum.trim().isEmpty()) {
@@ -23,8 +22,9 @@ public class SearchController {
         vrsView.jCheckBox4.setSelected(false);
         vrsView.jCheckBox5.setSelected(false);
 
-        // Call a method in DBSearch to search for the record
+        // Query status from DBSearch
         String status = new DBSearch().checkStatus(applicationNum.trim(), vehicleNum != null ? vehicleNum.trim() : "");
+        LOG.fine(() -> "Check status query for " + applicationNum + " returned: " + status);
 
         // Result Action
         if (status == null) {
