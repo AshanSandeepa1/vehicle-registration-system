@@ -32,6 +32,8 @@ public class vrsView extends javax.swing.JFrame {
          firstRegistration.setVisible(false);
          ownershipTransfer.setVisible(false);
          admin.setVisible(false);
+         setupFirstRegistrationTab();
+         setupAdminTab();
     }
 
     /**
@@ -2484,6 +2486,7 @@ public class vrsView extends javax.swing.JFrame {
     }//GEN-LAST:event_jLabelpharmaciesMouseClicked
 
     private void jLabelusersMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelusersMouseClicked
+        refreshAdminTables();
         switchTabs(adminTab, mainPane);
     }//GEN-LAST:event_jLabelusersMouseClicked
 
@@ -2652,8 +2655,24 @@ public class vrsView extends javax.swing.JFrame {
     }//GEN-LAST:event_cvvTFActionPerformed
 
     private void confirmBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_confirmBtnActionPerformed
-        // TODO add your handling code here:
-        switchTabs(confirmationTab,ownershipTransferLayeredPane );
+        String appNum = util.ApplicationIdGenerator.generateFormattedString();
+        applicationNumLbl.setText(appNum);
+
+        String vehNum = (numbersTF != null && !numbersTF.getText().trim().isEmpty()) ? numbersTF.getText().trim() : "TRANS-" + appNum;
+        String vehType = "Car";
+        if (bikeRB != null && bikeRB.isSelected()) vehType = "Motor Bike";
+        else if (dualpRB != null && dualpRB.isSelected()) vehType = "Dual Purpose";
+        else if (tractorRB != null && tractorRB.isSelected()) vehType = "Tractor";
+        else if (threewheelRB != null && threewheelRB.isSelected()) vehType = "Three Wheeler";
+
+        String fuel = "Petrol";
+        if (dieselRB != null && dieselRB.isSelected()) fuel = "Diesel";
+        else if (electricRB != null && electricRB.isSelected()) fuel = "Electric";
+
+        new Model.DBSearch().addCheckStatus(appNum, vehNum, "1");
+        new Model.DBSearch().addVehicleDetails(appNum, vehType, vehNum, fuel);
+
+        switchTabs(confirmationTab, ownershipTransferLayeredPane);
     }//GEN-LAST:event_confirmBtnActionPerformed
 
     private void doneBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doneBtnActionPerformed
@@ -2956,4 +2975,391 @@ public class vrsView extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> yearCMB2;
     private javax.swing.JComboBox<String> yearCMB3;
     // End of variables declaration//GEN-END:variables
+
+    // =========================================================================
+    // Fully Implemented First Registration Tab
+    // =========================================================================
+    private void setupFirstRegistrationTab() {
+        firstRegistrationTab.removeAll();
+        firstRegistrationTab.setBackground(new java.awt.Color(240, 244, 248));
+        firstRegistrationTab.setLayout(new java.awt.BorderLayout(15, 15));
+
+        // Header
+        javax.swing.JPanel headerPanel = new javax.swing.JPanel();
+        headerPanel.setBackground(new java.awt.Color(33, 150, 243));
+        headerPanel.setLayout(new java.awt.BorderLayout());
+        headerPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(15, 20, 15, 20));
+
+        javax.swing.JLabel titleLbl = new javax.swing.JLabel("First Time Vehicle Registration");
+        titleLbl.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 22));
+        titleLbl.setForeground(java.awt.Color.WHITE);
+
+        javax.swing.JLabel subLbl = new javax.swing.JLabel("Register a newly purchased or imported vehicle into the Department of Motor Traffic system.");
+        subLbl.setFont(new java.awt.Font("Segoe UI", java.awt.Font.PLAIN, 13));
+        subLbl.setForeground(new java.awt.Color(227, 242, 253));
+
+        headerPanel.add(titleLbl, java.awt.BorderLayout.NORTH);
+        headerPanel.add(subLbl, java.awt.BorderLayout.SOUTH);
+        firstRegistrationTab.add(headerPanel, java.awt.BorderLayout.NORTH);
+
+        // Form Card
+        javax.swing.JPanel formCard = new javax.swing.JPanel(new java.awt.GridBagLayout());
+        formCard.setBackground(java.awt.Color.WHITE);
+        formCard.setBorder(javax.swing.BorderFactory.createCompoundBorder(
+            javax.swing.BorderFactory.createEmptyBorder(15, 25, 15, 25),
+            javax.swing.BorderFactory.createLineBorder(new java.awt.Color(200, 215, 230), 1)
+        ));
+
+        java.awt.GridBagConstraints gbc = new java.awt.GridBagConstraints();
+        gbc.insets = new java.awt.Insets(8, 12, 8, 12);
+        gbc.fill = java.awt.GridBagConstraints.HORIZONTAL;
+
+        java.awt.Font lblFont = new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 13);
+        java.awt.Font tfFont = new java.awt.Font("Segoe UI", java.awt.Font.PLAIN, 13);
+
+        // Fields
+        javax.swing.JComboBox<String> cbType = new javax.swing.JComboBox<>(new String[]{"Car", "Motor Bike", "Dual Purpose", "Tractor", "Three Wheeler", "Commercial Vehicle"});
+        cbType.setFont(tfFont);
+
+        javax.swing.JTextField tfVehNum = new javax.swing.JTextField(15);
+        tfVehNum.setFont(tfFont);
+
+        javax.swing.JComboBox<String> cbFuel = new javax.swing.JComboBox<>(new String[]{"Petrol", "Diesel", "Electric", "Hybrid"});
+        cbFuel.setFont(tfFont);
+
+        javax.swing.JTextField tfChassis = new javax.swing.JTextField(15);
+        tfChassis.setFont(tfFont);
+
+        javax.swing.JTextField tfOwnerName = new javax.swing.JTextField(20);
+        tfOwnerName.setFont(tfFont);
+
+        javax.swing.JTextField tfNic = new javax.swing.JTextField(15);
+        tfNic.setFont(tfFont);
+
+        javax.swing.JTextField tfContact = new javax.swing.JTextField(15);
+        tfContact.setFont(tfFont);
+
+        javax.swing.JTextField tfAddress = new javax.swing.JTextField(20);
+        tfAddress.setFont(tfFont);
+
+        javax.swing.JLabel docStatusLbl = new javax.swing.JLabel("No document attached");
+        docStatusLbl.setFont(new java.awt.Font("Segoe UI", java.awt.Font.ITALIC, 12));
+        docStatusLbl.setForeground(java.awt.Color.GRAY);
+
+        javax.swing.JButton btnUploadDoc = new javax.swing.JButton("Attach Invoice / Certificate");
+        btnUploadDoc.setFont(tfFont);
+        btnUploadDoc.addActionListener(e -> {
+            javax.swing.JFileChooser fc = new javax.swing.JFileChooser();
+            int res = fc.showOpenDialog(firstRegistrationTab);
+            if (res == javax.swing.JFileChooser.APPROVE_OPTION) {
+                docStatusLbl.setText("Attached: " + fc.getSelectedFile().getName());
+                docStatusLbl.setForeground(new java.awt.Color(0, 128, 0));
+            }
+        });
+
+        // Add rows to GridBagLayout
+        int row = 0;
+        addFormRow(formCard, gbc, row++, "Vehicle Type:", cbType, lblFont);
+        addFormRow(formCard, gbc, row++, "Vehicle Plate / Reg No:", tfVehNum, lblFont);
+        addFormRow(formCard, gbc, row++, "Fuel Type:", cbFuel, lblFont);
+        addFormRow(formCard, gbc, row++, "Chassis / Engine Number:", tfChassis, lblFont);
+        addFormRow(formCard, gbc, row++, "Owner Full Name:", tfOwnerName, lblFont);
+        addFormRow(formCard, gbc, row++, "Owner NIC / Passport:", tfNic, lblFont);
+        addFormRow(formCard, gbc, row++, "Owner Contact Number:", tfContact, lblFont);
+        addFormRow(formCard, gbc, row++, "Owner Residential Address:", tfAddress, lblFont);
+
+        // Document row
+        gbc.gridx = 0; gbc.gridy = row; gbc.gridwidth = 1;
+        javax.swing.JLabel docLbl = new javax.swing.JLabel("Registration Document:");
+        docLbl.setFont(lblFont);
+        formCard.add(docLbl, gbc);
+
+        gbc.gridx = 1;
+        javax.swing.JPanel docPnl = new javax.swing.JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 8, 0));
+        docPnl.setBackground(java.awt.Color.WHITE);
+        docPnl.add(btnUploadDoc);
+        docPnl.add(docStatusLbl);
+        formCard.add(docPnl, gbc);
+        row++;
+
+        // Buttons
+        gbc.gridx = 0; gbc.gridy = row; gbc.gridwidth = 2;
+        javax.swing.JPanel btnPanel = new javax.swing.JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 15, 10));
+        btnPanel.setBackground(java.awt.Color.WHITE);
+
+        javax.swing.JButton btnSubmit = new javax.swing.JButton("Submit Registration");
+        btnSubmit.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 14));
+        btnSubmit.setBackground(new java.awt.Color(76, 175, 80));
+        btnSubmit.setForeground(java.awt.Color.WHITE);
+        btnSubmit.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+
+        javax.swing.JButton btnClear = new javax.swing.JButton("Clear Form");
+        btnClear.setFont(new java.awt.Font("Segoe UI", java.awt.Font.PLAIN, 13));
+
+        btnSubmit.addActionListener(e -> {
+            String vNum = tfVehNum.getText().trim();
+            String oName = tfOwnerName.getText().trim();
+            if (vNum.isEmpty() || oName.isEmpty()) {
+                javax.swing.JOptionPane.showMessageDialog(firstRegistrationTab,
+                    "Please fill in both Vehicle Registration Number and Owner Name.",
+                    "Validation Error", javax.swing.JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            String appNum = util.ApplicationIdGenerator.generateFormattedString();
+            String vType = (String) cbType.getSelectedItem();
+            String fType = (String) cbFuel.getSelectedItem();
+
+            Model.DBSearch dbs = new Model.DBSearch();
+            dbs.addCheckStatus(appNum, vNum, "1");
+            dbs.addVehicleDetails(appNum, vType, vNum, fType);
+
+            javax.swing.JOptionPane.showMessageDialog(firstRegistrationTab,
+                "Vehicle First Registration Submitted Successfully!\n\n" +
+                "Application Number: " + appNum + "\n" +
+                "Vehicle Number:     " + vNum + "\n" +
+                "Status:             1 - Application Submitted\n\n" +
+                "You can track this application in the 'Check Status' tab anytime.",
+                "Registration Successful", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+
+            tfVehNum.setText("");
+            tfChassis.setText("");
+            tfOwnerName.setText("");
+            tfNic.setText("");
+            tfContact.setText("");
+            tfAddress.setText("");
+            docStatusLbl.setText("No document attached");
+            docStatusLbl.setForeground(java.awt.Color.GRAY);
+        });
+
+        btnClear.addActionListener(e -> {
+            tfVehNum.setText("");
+            tfChassis.setText("");
+            tfOwnerName.setText("");
+            tfNic.setText("");
+            tfContact.setText("");
+            tfAddress.setText("");
+            docStatusLbl.setText("No document attached");
+            docStatusLbl.setForeground(java.awt.Color.GRAY);
+        });
+
+        btnPanel.add(btnSubmit);
+        btnPanel.add(btnClear);
+        formCard.add(btnPanel, gbc);
+
+        javax.swing.JScrollPane scrollPane = new javax.swing.JScrollPane(formCard);
+        scrollPane.setBorder(null);
+        firstRegistrationTab.add(scrollPane, java.awt.BorderLayout.CENTER);
+        firstRegistrationTab.revalidate();
+        firstRegistrationTab.repaint();
+    }
+
+    private void addFormRow(javax.swing.JPanel panel, java.awt.GridBagConstraints gbc, int row, String label, javax.swing.JComponent comp, java.awt.Font font) {
+        gbc.gridwidth = 1;
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        javax.swing.JLabel l = new javax.swing.JLabel(label);
+        l.setFont(font);
+        panel.add(l, gbc);
+
+        gbc.gridx = 1;
+        panel.add(comp, gbc);
+    }
+
+    // =========================================================================
+    // Fully Implemented Admin Dashboard Tab
+    // =========================================================================
+    private javax.swing.table.DefaultTableModel adminStatusTableModel;
+    private javax.swing.table.DefaultTableModel adminVehicleTableModel;
+    private javax.swing.table.DefaultTableModel adminUsersTableModel;
+    private javax.swing.JTable adminStatusTable;
+
+    private void setupAdminTab() {
+        adminTab.removeAll();
+        adminTab.setBackground(new java.awt.Color(245, 247, 250));
+        adminTab.setLayout(new java.awt.BorderLayout(10, 10));
+
+        // Header
+        javax.swing.JPanel headerPanel = new javax.swing.JPanel(new java.awt.BorderLayout());
+        headerPanel.setBackground(new java.awt.Color(38, 50, 56));
+        headerPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(15, 20, 15, 20));
+
+        javax.swing.JLabel titleLbl = new javax.swing.JLabel("VRS Administration Panel");
+        titleLbl.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 22));
+        titleLbl.setForeground(java.awt.Color.WHITE);
+
+        javax.swing.JLabel subLbl = new javax.swing.JLabel("Manage live application workflow approvals, vehicle registry, and user accounts.");
+        subLbl.setFont(new java.awt.Font("Segoe UI", java.awt.Font.PLAIN, 13));
+        subLbl.setForeground(new java.awt.Color(176, 190, 197));
+
+        headerPanel.add(titleLbl, java.awt.BorderLayout.NORTH);
+        headerPanel.add(subLbl, java.awt.BorderLayout.SOUTH);
+        adminTab.add(headerPanel, java.awt.BorderLayout.NORTH);
+
+        // Tabbed Pane for Tables
+        javax.swing.JTabbedPane tabbedPane = new javax.swing.JTabbedPane();
+        tabbedPane.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 13));
+
+        // 1. Status Workflow Tab
+        javax.swing.JPanel statusPanel = new javax.swing.JPanel(new java.awt.BorderLayout(10, 10));
+        statusPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        adminStatusTableModel = new javax.swing.table.DefaultTableModel(
+            new String[]{"Application No", "Vehicle No", "Status Code", "Status Description"}, 0
+        ) {
+            @Override public boolean isCellEditable(int r, int c) { return false; }
+        };
+        adminStatusTable = new javax.swing.JTable(adminStatusTableModel);
+        adminStatusTable.setRowHeight(26);
+        adminStatusTable.setFont(new java.awt.Font("Segoe UI", java.awt.Font.PLAIN, 13));
+        adminStatusTable.getTableHeader().setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 13));
+        statusPanel.add(new javax.swing.JScrollPane(adminStatusTable), java.awt.BorderLayout.CENTER);
+
+        // Status Control Bar
+        javax.swing.JPanel controlBar = new javax.swing.JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 12, 10));
+        controlBar.setBackground(java.awt.Color.WHITE);
+        controlBar.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(220, 225, 230)));
+
+        javax.swing.JLabel changeLbl = new javax.swing.JLabel("Change Status To:");
+        changeLbl.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 13));
+
+        javax.swing.JComboBox<String> statusCombo = new javax.swing.JComboBox<>(new String[]{
+            "1 - Application Submitted",
+            "2 - Transferor Approved",
+            "3 - DMT Validator Approved",
+            "4 - Document Released (PDF)",
+            "5 - Document Released (Post)"
+        });
+        statusCombo.setFont(new java.awt.Font("Segoe UI", java.awt.Font.PLAIN, 13));
+
+        javax.swing.JButton btnUpdateStatus = new javax.swing.JButton("Update Status");
+        btnUpdateStatus.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 13));
+        btnUpdateStatus.setBackground(new java.awt.Color(33, 150, 243));
+        btnUpdateStatus.setForeground(java.awt.Color.WHITE);
+
+        javax.swing.JButton btnDelete = new javax.swing.JButton("Delete Record");
+        btnDelete.setFont(new java.awt.Font("Segoe UI", java.awt.Font.PLAIN, 13));
+        btnDelete.setForeground(java.awt.Color.RED);
+
+        javax.swing.JButton btnRefreshStatus = new javax.swing.JButton("Refresh");
+        btnRefreshStatus.setFont(new java.awt.Font("Segoe UI", java.awt.Font.PLAIN, 13));
+
+        // Row selection listener to synchronize dropdown
+        adminStatusTable.getSelectionModel().addListSelectionListener(e -> {
+            int r = adminStatusTable.getSelectedRow();
+            if (r >= 0) {
+                String code = String.valueOf(adminStatusTableModel.getValueAt(r, 2));
+                for (int i = 0; i < statusCombo.getItemCount(); i++) {
+                    if (statusCombo.getItemAt(i).startsWith(code)) {
+                        statusCombo.setSelectedIndex(i);
+                        break;
+                    }
+                }
+            }
+        });
+
+        btnUpdateStatus.addActionListener(e -> {
+            int r = adminStatusTable.getSelectedRow();
+            if (r < 0) {
+                javax.swing.JOptionPane.showMessageDialog(adminTab, "Please select an application row first.", "Notice", javax.swing.JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            String appNum = (String) adminStatusTableModel.getValueAt(r, 0);
+            String selectedItem = (String) statusCombo.getSelectedItem();
+            String newStatus = selectedItem.substring(0, 1);
+
+            Model.DBSearch dbs = new Model.DBSearch();
+            boolean ok = dbs.updateCheckStatus(appNum, newStatus);
+            if (ok) {
+                javax.swing.JOptionPane.showMessageDialog(adminTab, "Application " + appNum + " updated to Status " + newStatus, "Updated", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+                refreshAdminTables();
+            }
+        });
+
+        btnDelete.addActionListener(e -> {
+            int r = adminStatusTable.getSelectedRow();
+            if (r < 0) {
+                javax.swing.JOptionPane.showMessageDialog(adminTab, "Please select an application to delete.", "Notice", javax.swing.JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            String appNum = (String) adminStatusTableModel.getValueAt(r, 0);
+            int confirm = javax.swing.JOptionPane.showConfirmDialog(adminTab, "Are you sure you want to delete application " + appNum + "?", "Confirm Delete", javax.swing.JOptionPane.YES_NO_OPTION);
+            if (confirm == javax.swing.JOptionPane.YES_OPTION) {
+                new Model.DBSearch().deleteApplication(appNum);
+                refreshAdminTables();
+            }
+        });
+
+        btnRefreshStatus.addActionListener(e -> refreshAdminTables());
+
+        controlBar.add(changeLbl);
+        controlBar.add(statusCombo);
+        controlBar.add(btnUpdateStatus);
+        controlBar.add(btnDelete);
+        controlBar.add(btnRefreshStatus);
+        statusPanel.add(controlBar, java.awt.BorderLayout.SOUTH);
+
+        tabbedPane.addTab("Applications Workflow", statusPanel);
+
+        // 2. Vehicles Tab
+        javax.swing.JPanel vehPanel = new javax.swing.JPanel(new java.awt.BorderLayout(10, 10));
+        vehPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        adminVehicleTableModel = new javax.swing.table.DefaultTableModel(
+            new String[]{"Application No", "Vehicle Type", "Vehicle No", "Fuel Type"}, 0
+        ) {
+            @Override public boolean isCellEditable(int r, int c) { return false; }
+        };
+        javax.swing.JTable vehTable = new javax.swing.JTable(adminVehicleTableModel);
+        vehTable.setRowHeight(26);
+        vehTable.setFont(new java.awt.Font("Segoe UI", java.awt.Font.PLAIN, 13));
+        vehTable.getTableHeader().setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 13));
+        vehPanel.add(new javax.swing.JScrollPane(vehTable), java.awt.BorderLayout.CENTER);
+
+        javax.swing.JPanel vehControl = new javax.swing.JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+        javax.swing.JButton btnRefreshVeh = new javax.swing.JButton("Refresh Vehicles");
+        btnRefreshVeh.addActionListener(e -> refreshAdminTables());
+        vehControl.add(btnRefreshVeh);
+        vehPanel.add(vehControl, java.awt.BorderLayout.SOUTH);
+
+        tabbedPane.addTab("Registered Vehicles", vehPanel);
+
+        // 3. Users Tab
+        javax.swing.JPanel usersPanel = new javax.swing.JPanel(new java.awt.BorderLayout(10, 10));
+        usersPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        adminUsersTableModel = new javax.swing.table.DefaultTableModel(
+            new String[]{"User ID", "Username", "Email Address"}, 0
+        ) {
+            @Override public boolean isCellEditable(int r, int c) { return false; }
+        };
+        javax.swing.JTable usersTable = new javax.swing.JTable(adminUsersTableModel);
+        usersTable.setRowHeight(26);
+        usersTable.setFont(new java.awt.Font("Segoe UI", java.awt.Font.PLAIN, 13));
+        usersTable.getTableHeader().setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 13));
+        usersPanel.add(new javax.swing.JScrollPane(usersTable), java.awt.BorderLayout.CENTER);
+
+        javax.swing.JPanel usersControl = new javax.swing.JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+        javax.swing.JButton btnRefreshUsers = new javax.swing.JButton("Refresh Users");
+        btnRefreshUsers.addActionListener(e -> refreshAdminTables());
+        usersControl.add(btnRefreshUsers);
+        usersPanel.add(usersControl, java.awt.BorderLayout.SOUTH);
+
+        tabbedPane.addTab("System Users", usersPanel);
+
+        adminTab.add(tabbedPane, java.awt.BorderLayout.CENTER);
+        adminTab.revalidate();
+        adminTab.repaint();
+    }
+
+    public void refreshAdminTables() {
+        if (adminStatusTableModel != null) {
+            new Model.DBSearch().loadCheckStatusTable(adminStatusTableModel);
+        }
+        if (adminVehicleTableModel != null) {
+            new Model.DBSearch().loadVehicleTable(adminVehicleTableModel);
+        }
+        if (adminUsersTableModel != null) {
+            new Model.DBSearch().loadUsersTable(adminUsersTableModel);
+        }
+    }
+
 }

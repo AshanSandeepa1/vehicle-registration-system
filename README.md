@@ -39,7 +39,20 @@ $CP = "build\classes;lib\jcalendar-1.4.jar;lib\ojdbc11.jar;lib\h2-2.2.224.jar;sr
 - **Utility Isolation**: Extracted `ApplicationIdGenerator` into `util.ApplicationIdGenerator` and kept `Controller.StringGenerator` as a clean delegator.
 - **Broken NetBeans Dependency Fixed**: Ashan's hardcoded path (`C:\Users\Ashan\Downloads\jcalendar-1.4\...`) was updated in `nbproject/project.properties` to reference the local `lib/jcalendar-1.4.jar`, enabling builds across all machines.
 
-### 2. Bugs Fixed
+### 2. Newly Developed & Completed Features
+- **First Time Vehicle Registration Module**:
+  - Replaced the placeholder *"To be developed..."* screen with a full registration interface.
+  - Supports Vehicle Type, Plate Number, Fuel Type, Engine/Chassis No, Owner Name, NIC, Contact, Address, and Document Attachment.
+  - Automatically generates unique sequential application numbers (e.g. `0001AA`), records the vehicle into `vehicle_details`, and registers initial status into `checkstatus`.
+- **Admin Dashboard & Workflow Management**:
+  - Replaced the placeholder *"To be developed..."* screen with a full administration suite.
+  - **Applications Workflow Tab**: Interactive `JTable` of all applications. Allows admins to select any application, change its status (`1-Submitted` to `5-Released via Post`), or delete records with live database synchronization.
+  - **Registered Vehicles Tab**: Live table of all registered vehicles and attributes.
+  - **System Users Tab**: Live table of all registered login accounts.
+- **End-to-End Ownership Transfer Integration**:
+  - Connected the payment confirmation to auto-generate a valid Application Number, insert the vehicle and transfer application into the database, and display the official receipt number on the confirmation screen.
+
+### 3. Bugs Fixed
 - **Connection Closure Bug**: `LoginController` was calling `DBConnection.closeCon()` immediately after login, which closed the shared connection and caused any subsequent status searches to fail with `SQLException: Closed Connection`.
 - **Status Checkbox State Lingering**: In `SearchController`, checking an application did not clear existing checkboxes, so checking status 5 and then status 1 left all 5 boxes checked. Checkboxes are now reset prior to each query.
 - **SQL Injection Prevention**: Refactored `DBSearch.java` to use `PreparedStatement` with parameterized queries instead of string concatenation.
